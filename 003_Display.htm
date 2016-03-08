@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Game buster!</title>
+    <style type="text/css">
+        #main    {position:relative;width:500px;height:500px;top:50px;border:solid;float:none;background-color:rgb(240, 240, 240);}
+        #main div{position:absolute;width:10px; height:10px; left:0px;top:0px;border:solid;border-color:green;background-color:green;}
+        #buttons {position:relative;width:500px;height:30px; top:50px;padding-top:20px;}
+        p {height:20px;width:100px;font-weight:bold;border:groove;text-align:right;float:left;margin:10px;}
+		#fly {position:absolute;height:50px;width:50px;left:220px;top:450px;}
+		input {position:relative;width:100px;}
+    </style>
+    <script type="text/javascript">
+		window.onload = function(){
+            var main = document.getElementById("main");
+            var fly = document.getElementById("fly");
+            var pos_x = 220;
+            var counter = 0;
+            var speed = 1;
+            
+            function MoveLeft() {
+                if (pos_x > 0) { pos_x = pos_x - 10; };
+                fly.style.left = pos_x + "px";
+            }
+            function MoveRight() {
+                if (pos_x < 450) { pos_x = pos_x + 10; };
+                fly.style.left = pos_x + "px";
+            }
+            document.getElementById("b1").onkeypress = function (e) {
+                if (e.keyCode == '37') { MoveLeft() }
+                else if (e.keyCode == '39') { MoveRight() }
+            }
+            document.getElementById("left").onclick = MoveLeft;
+            document.getElementById("right").onclick = MoveRight;
+
+            function Asteroid(name, x, y) {
+                this.name = name;
+                this.x = x;
+                this.y = y;
+            }
+            Asteroid.prototype.Move = function () {
+                if (this.y < 450) { this.y = this.y + 10 }
+                else {
+                    if (this.x > pos_x - 10 && this.x < pos_x + 40) {
+                        counter = counter + 100;
+                        document.getElementById("counter").innerHTML = "Счет:" + counter;
+                        LevelUp();                        
+                    }
+                    this.y = 10;
+                    this.x = parseInt(Math.random() * 48) * 10 + 10;
+                }
+            }
+            function LevelUp() {
+                if (counter % 200 == 0) {
+                    speed = speed + 1;
+                    var c = 240 - speed*10;
+                    document.getElementById("speed").innerHTML = "Уровень:" + speed;
+                    clearInterval(t);
+                    t = setInterval(anim, 500 - 50 * speed);
+                    main.style.backgroundColor = "rgb(" + c + "," + c + "," + c + ")";
+                }
+            }
+
+            var arr = [];
+            for (var i = 0; i < 10 ; i++) {
+                arr[i] = new Asteroid("a" + i, parseInt(Math.random() * 48) * 10 + 10, parseInt(Math.random() * 35) * 10);
+                var cub = document.createElement("div");
+                cub.id = arr[i].name;
+				main.appendChild(cub);
+            }
+
+            function anim() {
+                for (var i = 0; i < arr.length; i++) {
+                    arr[i].Move();
+                    document.getElementById(arr[i].name).style.left = arr[i].x + "px";
+                    document.getElementById(arr[i].name).style.top = arr[i].y + "px";
+                }
+            }
+
+            anim();
+            var t = setInterval(anim, 500);
+           
+        }
+    </script>
+    
+</head>
+<body id="b1">
+    <p id="counter">Счет:0</p>
+    <p id="speed">Уровень:1</p>
+    <div id="main">
+        <img id="fly" src="fly.gif" />
+    </div>
+    <div id="buttons">
+        <input type="button" value="left" id="left" style="left:100px;"/>
+        <input type="button" value="right" id="right" style="left:200px;"/>
+    </div>
+</body>
+</html>
+
